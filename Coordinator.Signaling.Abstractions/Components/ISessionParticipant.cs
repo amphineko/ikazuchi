@@ -8,18 +8,28 @@ namespace Coordinator.Signaling.Abstractions.Components
     {
         Task<string> GetConnectionId();
 
-        Task SetConnectionId(string connectionId);
+        Task<Guid[]> GetSessionParticipants();
 
         Task ForwardRtcAnswer(Guid destination, string sdpAnswer);
 
         Task ForwardRtcOffer(Guid destination, string sdpOffer);
 
+        Task ForwardIceCandidate(Guid destination, string payload);
+
         Task JoinSession(Guid sessionId);
 
         Task<bool> LeaveCurrentSession();
 
-        Task PushRtcAnswerToClient(Guid origin, string sdpAnswer);
+        Task OnParticipantIceCandidate(Guid origin, string payload);
 
-        Task PushRtcOfferToClient(Guid origin, string sdpOffer);
+        Task OnParticipantJoin(Guid id);
+
+        Task OnParticipantLeave(Guid id);
+
+        Task OnParticipantRtcAnswer(Guid origin, string sdpAnswer);
+
+        Task OnParticipantRtcOffer(Guid origin, string sdpOffer);
+
+        Task SetConnectionId(string connectionId);
     }
 }

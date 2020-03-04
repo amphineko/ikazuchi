@@ -34,10 +34,19 @@ namespace Scratch
             // callee setup
 
             var callee = await ConnectToHub();
-            callee.On<Guid, string>("ReceiveRtcOffer", (origin, offer) =>
+
+            callee.On<Guid, string>(nameof(IGatewayClient.OnRtcOffer), (origin, offer) =>
             {
+                // handle rtc offers
                 Console.Out.WriteLine($"Received offer from {origin}: {offer}");
                 callee.InvokeAsync(nameof(IGatewayServer.SendRtcAnswer), origin, "EXAMPLE ANSWER");
+            });
+            callee.On<Guid, string>(nameof(IGatewayClient.OnIceCandidate), async (origin, payload) =>
+            {
+                // handle ice candidate
+                Console.Out.WriteLine($"Callee received ICE candidate from {origin}: {payload}");
+                await Task.Delay(TimeSpan.FromSeconds(2));
+                await callee.InvokeAsync(nameof(IGatewayServer.SendIceCandidate), origin, "EXAMPLE CANDIDATE");
             });
 
             var calleeId = await callee.InvokeAsync<Guid>(nameof(IGatewayServer.GetParticipantId));
@@ -51,10 +60,18 @@ namespace Scratch
             // caller setup
 
             var caller = await ConnectToHub();
-            caller.On<Guid, string>("ReceiveRtcAnswer", (origin, answer) =>
+            caller.On<Guid, string>(nameof(IGatewayClient.OnRtcAnswer), async (origin, answer) =>
             {
                 Console.Out.WriteLine($"Received answer from {origin}: {answer}");
-                host.StopAsync();
+                await Task.Delay(TimeSpan.FromSeconds(10));
+                await host.StopAsync();
+            });
+            caller.On<Guid, string>(nameof(IGatewayClient.OnIceCandidate), async (origin, payload) =>
+            {
+                // handle ice candidate
+                Console.Out.WriteLine($"Caller received ICE candidate from {origin}: {payload}");
+                await Task.Delay(TimeSpan.FromSeconds(2));
+                await callee.InvokeAsync(nameof(IGatewayServer.SendIceCandidate), origin, "EXAMPLE CANDIDATE");
             });
 
             var callerId = await caller.InvokeAsync<Guid>(nameof(IGatewayServer.GetParticipantId));
@@ -68,7 +85,9 @@ namespace Scratch
 
             await caller.InvokeAsync(nameof(IGatewayServer.SendRtcOffer), calleeId, "EXAMPLE OFFER");
 
-            await Task.Delay(TimeSpan.FromSeconds(2.5));
+            // send ice candidate
+
+            await callee.InvokeAsync(nameof(IGatewayServer.SendIceCandidate), callerId, "EXAMPLE CANDIDATE");
 
             await host.WaitForShutdownAsync();
         }

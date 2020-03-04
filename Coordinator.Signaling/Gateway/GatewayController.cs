@@ -38,6 +38,11 @@ namespace Coordinator.Signaling.Gateway
             return Task.FromResult(Participant.GetPrimaryKey());
         }
 
+        public Task<Guid[]> GetSessionParticipants()
+        {
+            return Participant.GetSessionParticipants();
+        }
+
         public Task LeaveCurrentSession()
         {
             return Participant.LeaveCurrentSession();
@@ -46,6 +51,11 @@ namespace Coordinator.Signaling.Gateway
         public Task JoinSession(Guid sessionId)
         {
             return Participant.JoinSession(sessionId);
+        }
+
+        public Task SendIceCandidate(Guid destination, string payload)
+        {
+            return Participant.ForwardIceCandidate(destination, payload);
         }
 
         public Task SendRtcAnswer(Guid destination, string sdpAnswer)

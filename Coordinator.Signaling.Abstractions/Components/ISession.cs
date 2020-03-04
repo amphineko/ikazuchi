@@ -10,8 +10,12 @@ namespace Coordinator.Signaling.Abstractions.Components
 
         Task RemoveParticipant(ISessionParticipant participant);
 
+        Task ForwardIceCandidate(Guid destination, Guid origin, string payload);
+
         Task ForwardRtcAnswer(Guid destination, Guid origin, string sdpAnswer);
 
         Task ForwardRtcOffer(Guid destination, Guid origin, string sdpOffer);
+
+        Task<Guid[]> GetParticipants();
     }
 }
