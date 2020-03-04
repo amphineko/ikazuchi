@@ -9,7 +9,7 @@ namespace Coordinator.Signaling.Gateway
     public class GatewayController : Hub<IGatewayClient>, IGatewayServer
     {
         private const string ParticipantIdKey = "participantId";
-        
+
         private readonly IGrainFactory _grainFactory;
 
         private ISessionParticipant _participant;
