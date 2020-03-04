@@ -18,18 +18,20 @@ namespace Coordinator.Signaling.Components
 
         public async Task AddParticipant(ISessionParticipant participant)
         {
-            await Task.WhenAll(
-                _participants
-                    .Select(pair => pair.Value.OnParticipantJoin(participant.GetPrimaryKey()))
-            );
+            await Task.WhenAll(_participants.Select(
+                pair => pair.Value.OnParticipantJoin(participant.GetPrimaryKey())
+            ));
 
             _participants.Add(participant.GetPrimaryKey(), participant);
         }
 
-        public Task RemoveParticipant(ISessionParticipant participant)
+        public async Task RemoveParticipant(ISessionParticipant participant)
         {
             _participants.Remove(participant.GetPrimaryKey());
-            return Task.CompletedTask;
+
+            await Task.WhenAll(_participants.Select(
+                pair => pair.Value.OnParticipantLeave(participant.GetPrimaryKey())
+            ));
         }
 
         public Task ForwardIceCandidate(Guid destination, Guid origin, string payload)

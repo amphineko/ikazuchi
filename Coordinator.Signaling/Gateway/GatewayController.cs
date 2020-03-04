@@ -68,10 +68,16 @@ namespace Coordinator.Signaling.Gateway
             return Participant.ForwardRtcOffer(destination, sdpOffer);
         }
 
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
-            Participant.SetConnectionId(Context.ConnectionId);
-            return base.OnConnectedAsync();
+            await Participant.SetConnectionId(Context.ConnectionId);
+            await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            await Participant.LeaveCurrentSession();
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }
