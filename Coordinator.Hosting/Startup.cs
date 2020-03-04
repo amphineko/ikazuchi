@@ -4,6 +4,7 @@ using Coordinator.Signaling.Components;
 using Coordinator.Signaling.Gateway;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,8 @@ namespace Coordinator.Hosting
 {
     public static class Startup
     {
+        private const string HubCorsPolicyName = "hub-cors-policy";
+
         public static IHostBuilder CreateDevelopmentHostBuilder(string[] args, StartupConfiguration config)
         {
             return Host
@@ -47,11 +50,30 @@ namespace Coordinator.Hosting
 
             app.UseRouting();
 
-            app.UseEndpoints(builder => { builder.MapHub<GatewayController>("/api/v1/gateway"); });
+            app.UseCors(HubCorsPolicyName);
+            app.UseAuthorization();
+
+            app.UseEndpoints(builder =>
+            {
+                builder
+                    .MapHub<GatewayController>("/api/v1/gateway")
+                    .RequireCors(HubCorsPolicyName);
+            });
         }
 
         private static void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(HubCorsPolicyName, builder =>
+                {
+                    builder
+                        .AllowCredentials()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .WithOrigins("http://localhost:3000");
+                });
+            });
             services.AddLogging(builder => builder.AddConsole());
             services.AddSignalR();
         }
