@@ -10,10 +10,10 @@ namespace Coordinator.Signaling.Gateway
 
         Task OnParticipantJoin(Guid id, SessionParticipantDescription description);
 
-        Task OnIceCandidate(Guid origin, string payload);
+        Task OnParticipantIceCandidate(Guid origin, string payload);
 
-        Task OnRtcAnswer(Guid origin, string sdpAnswer);
+        Task OnParticipantRtcAnswer(Guid origin, string sdpAnswer);
 
-        Task OnRtcOffer(Guid origin, string sdpOffer);
+        Task OnParticipantRtcOffer(Guid origin, string sdpOffer);
     }
 }

@@ -73,7 +73,7 @@ namespace Coordinator.Signaling.Components
 
         public Task OnParticipantIceCandidate(Guid origin, string payload)
         {
-            return GetClient().OnIceCandidate(origin, payload);
+            return GetClient().OnParticipantIceCandidate(origin, payload);
         }
 
         public Task OnParticipantJoin(Guid id)
