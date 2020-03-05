@@ -89,12 +89,12 @@ namespace Coordinator.Signaling.Components
 
         public Task OnParticipantRtcAnswer(Guid origin, string sdpAnswer)
         {
-            return GetClient().OnRtcAnswer(origin, sdpAnswer);
+            return GetClient().OnParticipantRtcAnswer(origin, sdpAnswer);
         }
 
         public Task OnParticipantRtcOffer(Guid origin, string sdpOffer)
         {
-            return GetClient().OnRtcOffer(origin, sdpOffer);
+            return GetClient().OnParticipantRtcOffer(origin, sdpOffer);
         }
 
         public Task<Guid[]> GetSessionParticipants()

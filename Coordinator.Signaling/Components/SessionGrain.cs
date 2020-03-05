@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Coordinator.Signaling.Abstractions.Components;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace Coordinator.Signaling.Components
 {
+    [Reentrant]
     public class SessionGrain : Grain, ISession
     {
         private readonly IDictionary<Guid, ISessionParticipant> _participants;
